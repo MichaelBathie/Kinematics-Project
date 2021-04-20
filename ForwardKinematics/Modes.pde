@@ -20,7 +20,7 @@ void keyPressed()
   if(key == '3') {
     programMode = mode.THIRD;
   }
-  if(key == ANGLE_UP) {
+  if(key == ANGLE_UP)  {
     if(programMode == mode.FIRST)
     {
       anchor.angle -= radians(5);

@@ -28,6 +28,7 @@ class Arm {
     this.endPoint = new PVector(startPoint.x + dx, startPoint.y + dy);
   }
 
+
   void recalculate(Arm parent) {
     this.startPoint = new PVector(parent.endPoint.x, parent.endPoint.y);
   }
