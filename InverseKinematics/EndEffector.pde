@@ -20,6 +20,8 @@ class EndEffector {
   }
 
   void display() {
+    fill(1,0,0);
+    stroke(1,0,0);
     circle(this.point.x, this.point.y, radius);
   }
 }

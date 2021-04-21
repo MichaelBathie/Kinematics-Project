@@ -17,6 +17,7 @@ Chain IKDemo;
 void setup() {
   size(800,800);
   colorMode(RGB, 1.0f);
+  strokeWeight(3);
 
   joints = new PVector[4];
 
@@ -39,14 +40,21 @@ void setup() {
 
   endPointDemo = new EndEffector(700, 300, 20);
 
-  IKDemo = new Chain(jointDemo, endPointDemo);  
+  IKDemo = new Chain(jointDemo, endPointDemo, "demonstration");  
+  IKDemo.fabrikDemo();
 }
 
 void draw() {
-  background(0.5);
-  fill(0.4, 0.8, 0.4);
+  background(0.7);
+  fill(0,0,0);
+  stroke(0,0,0);
 
-  endPoint.display();
+  if(programMode == mode.DEMO) {
+    doDemo();
+  } else {
+   endPoint.display();
+  }
+
 }
 
 //can put check in a loop for more than one end point
@@ -57,3 +65,92 @@ void mouseDragged() {
   } 
 }
 
+//hard coded demo
+void doDemo() {
+  if(IKDemo.demoCounter > 14) {
+
+    circle(IKDemo.demo[0].x, IKDemo.demo[0].y, 30);
+    line(IKDemo.demo[0].x, IKDemo.demo[0].y, IKDemo.demo[1].x, IKDemo.demo[1].y);
+
+    circle(IKDemo.demo[1].x, IKDemo.demo[1].y, 30);
+    line(IKDemo.demo[1].x, IKDemo.demo[1].y, IKDemo.demo[2].x, IKDemo.demo[2].y);
+
+    circle(IKDemo.demo[2].x, IKDemo.demo[2].y, 30);
+    line(IKDemo.demo[2].x, IKDemo.demo[2].y, IKDemo.demo[3].x, IKDemo.demo[3].y);
+
+    circle(IKDemo.demo[3].x, IKDemo.demo[3].y, 30);
+
+    fill(0, 0, 0.7);
+    stroke(0, 0, 0.7);
+
+    circle(IKDemo.demo[8].x, IKDemo.demo[8].y, 30);
+
+    line(IKDemo.demo[8].x, IKDemo.demo[8].y, IKDemo.demo[9].x, IKDemo.demo[9].y);
+
+    circle(IKDemo.demo[9].x, IKDemo.demo[9].y, 30);
+    line(IKDemo.demo[9].x, IKDemo.demo[9].y, IKDemo.demo[10].x, IKDemo.demo[10].y);
+
+    circle(IKDemo.demo[10].x, IKDemo.demo[10].y, 30);
+    line(IKDemo.demo[10].x, IKDemo.demo[10].y, IKDemo.demo[11].x, IKDemo.demo[11].y);
+
+    circle(IKDemo.demo[11].x, IKDemo.demo[11].y, 30);
+
+  } else {
+    circle(IKDemo.demo[0].x, IKDemo.demo[0].y, 30);
+    line(IKDemo.demo[0].x, IKDemo.demo[0].y, IKDemo.demo[1].x, IKDemo.demo[1].y);
+
+    circle(IKDemo.demo[1].x, IKDemo.demo[1].y, 30);
+    line(IKDemo.demo[1].x, IKDemo.demo[1].y, IKDemo.demo[2].x, IKDemo.demo[2].y);
+
+    circle(IKDemo.demo[2].x, IKDemo.demo[2].y, 30);
+    line(IKDemo.demo[2].x, IKDemo.demo[2].y, IKDemo.demo[3].x, IKDemo.demo[3].y);
+
+    circle(IKDemo.demo[3].x, IKDemo.demo[3].y, 30);
+
+    fill(0, 0.7, 0);
+    stroke(0, 0.7, 0);
+
+    if(IKDemo.demoCounter > 0)
+      circle(IKDemo.demo[4].x, IKDemo.demo[4].y, 30);
+
+    if(IKDemo.demoCounter > 1)
+      line(IKDemo.demo[4].x, IKDemo.demo[4].y, IKDemo.demo[2].x, IKDemo.demo[2].y);
+
+    if(IKDemo.demoCounter > 2)
+      circle(IKDemo.demo[5].x, IKDemo.demo[5].y, 30);
+    if(IKDemo.demoCounter > 3)
+      line(IKDemo.demo[5].x, IKDemo.demo[5].y, IKDemo.demo[1].x, IKDemo.demo[1].y);
+
+    if(IKDemo.demoCounter > 4)
+      circle(IKDemo.demo[6].x, IKDemo.demo[6].y, 30);
+    if(IKDemo.demoCounter > 5)
+      line(IKDemo.demo[6].x, IKDemo.demo[6].y, IKDemo.demo[0].x, IKDemo.demo[0].y);
+
+    if(IKDemo.demoCounter > 6)
+      circle(IKDemo.demo[7].x, IKDemo.demo[7].y, 30);
+
+    fill(0, 0, 0.7);
+    stroke(0, 0, 0.7);
+
+    if(IKDemo.demoCounter > 7)
+      circle(IKDemo.demo[8].x, IKDemo.demo[8].y, 30);
+
+    if(IKDemo.demoCounter > 8)
+      line(IKDemo.demo[8].x, IKDemo.demo[8].y, IKDemo.demo[6].x, IKDemo.demo[6].y);
+
+    if(IKDemo.demoCounter > 9)
+      circle(IKDemo.demo[9].x, IKDemo.demo[9].y, 30);
+    if(IKDemo.demoCounter > 10)
+      line(IKDemo.demo[9].x, IKDemo.demo[9].y, IKDemo.demo[5].x, IKDemo.demo[5].y);
+
+    if(IKDemo.demoCounter > 11)
+      circle(IKDemo.demo[10].x, IKDemo.demo[10].y, 30);
+    if(IKDemo.demoCounter > 12)
+      line(IKDemo.demo[10].x, IKDemo.demo[10].y, IKDemo.demo[4].x, IKDemo.demo[4].y);
+
+    if(IKDemo.demoCounter > 13)
+      circle(IKDemo.demo[11].x, IKDemo.demo[11].y, 30);
+  }
+
+  endPointDemo.display();  
+}
