@@ -8,6 +8,12 @@ EndEffector endPoint;
 
 Chain IK;
 
+
+PVector jointDemo[];
+EndEffector endPointDemo;
+
+Chain IKDemo;
+
 void setup() {
   size(800,800);
   colorMode(RGB, 1.0f);
@@ -22,6 +28,18 @@ void setup() {
   endPoint = new EndEffector(width/2, height/2, 20);
 
   IK = new Chain(joints, endPoint);
+
+
+  jointDemo = new PVector[4];
+
+  jointDemo[0] = new PVector(100, 200);
+  jointDemo[1] = new PVector(200, 500);
+  jointDemo[2] = new PVector(400, 700);
+  jointDemo[3] = new PVector(600, 600);
+
+  endPointDemo = new EndEffector(700, 300, 20);
+
+  IKDemo = new Chain(jointDemo, endPointDemo);  
 }
 
 void draw() {
