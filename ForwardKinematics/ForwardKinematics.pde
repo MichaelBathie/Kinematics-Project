@@ -1,3 +1,8 @@
+/*
+  Michael Bathie, 7835010
+  FK demonstration
+*/
+
 PVector start  = new PVector(100, 400);
 
 Arm anchor = new Arm(start.x,start.y, 150, radians(60));
