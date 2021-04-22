@@ -5,11 +5,14 @@
 
 PVector joints[];
 PVector branchJoints[];
+PVector branchExtra[];
 EndEffector endPoint;
 EndEffector branchEnds[];
+EndEffector branchExtraEnd;
 
 Chain IK;
 Chain branch[];
+Chain bExtra;
 
 
 PVector jointDemo[];
@@ -52,6 +55,8 @@ void setup() {
   branchJoints = new PVector[5];
   branchEnds = new EndEffector[5];
   branch = new Chain[5];
+  branchExtra = new PVector[5];
+  branchExtraEnd = new EndEffector(100, 100, 20);
 
   int newHeight = height / joints.length;
   for(int i = 0; i < joints.length; i++) {
@@ -68,6 +73,14 @@ void setup() {
     }
     branch[i] = new Chain(branchJoints, branchEnds[i], IK, i);
   }
+
+  branchExtra[0] = branch[2].forward[2];
+  branchExtra[1] = new PVector(width/2, branchExtra[0].y - 50);
+  branchExtra[2] = new PVector(width/2, branchExtra[0].y - 100);
+  branchExtra[3] = new PVector(width/2, branchExtra[0].y - 150);
+  branchExtra[4] = new PVector(width/2, branchExtra[0].y - 200);
+  bExtra = new Chain(branchExtra, branchExtraEnd, branch[2], 2);
+
 }
 
 void draw() {
@@ -82,17 +95,27 @@ void draw() {
     IK.display();
     endPoint.display();
   } else if(programMode == mode.BRANCH) {
-    IK.fabrik();
-    IK.display();
+    stroke(0,0,0.3);
+    fill(0,0,0.3);
+    bExtra.fabrik();
+    bExtra.display();
+    branchExtraEnd.display(new PVector(0,0,1));
 
     for(int i = 0; i < branch.length; i++) {
-      stroke(0,0,0);
-      fill(0,0,0);
+      stroke(0,0.3,0);
+      fill(0,0.3,0);
       branch[i].fabrik();
       branch[i].display();
-      branchEnds[i].display();
+      branchEnds[i].display(new PVector(0,1,0));
     }
-    endPoint.display(new PVector(0,1,0));
+
+    stroke(0.3,0,0);
+    fill(0.3,0,0);
+    IK.fabrik();
+    IK.display();
+    endPoint.display(new PVector(1,0,0));
+  } else if(programMode == mode.CONSTRAINT) {
+
   }
 
 }
@@ -102,6 +125,11 @@ void mouseDragged() {
   if(endPoint.checkBounds()) {
     endPoint.point.x = mouseX;
     endPoint.point.y = mouseY;
+    return;
+  } 
+  if(branchExtraEnd.checkBounds()) {
+    branchExtraEnd.point.x = mouseX;
+    branchExtraEnd.point.y = mouseY;
     return;
   } 
   for(int i = 0; i < branchEnds.length; i++) {

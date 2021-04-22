@@ -1,10 +1,11 @@
 final char DEMO = 'd';
 final char NORMAL = 'n';
 final char BRANCH = 'b';
+final char CONSTRAINT = 'c';
 final char NEXT_STEP = ' '; 
 
 enum mode {
-  DEMO, NORMAL, BRANCH
+  DEMO, NORMAL, BRANCH, CONSTRAINT
 };
 
 mode programMode = mode.DEMO;
@@ -21,6 +22,10 @@ void keyPressed()
 
   if(key == BRANCH) {
     programMode = mode.BRANCH;
+  }
+
+  if(key == CONSTRAINT) {
+    programMode = mode.CONSTRAINT;
   }
 
   if(key == NEXT_STEP) {
