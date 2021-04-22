@@ -98,21 +98,28 @@ class Chain {
   void notReachable() {
     PVector startToEnd = new PVector(endPoint.point.x - startPoint.x, endPoint.point.y - startPoint.y);    
 
-    PVector secondPoint = getFabrikPoint(startPoint, startToEnd, len[0]);
-    PVector thirdPoint = getFabrikPoint(forward[1], startToEnd, len[1]);
-    PVector fourthPoint = getFabrikPoint(forward[2], startToEnd, len[2]);
+    for(int i = 1; i < forward.length; i++) {
+      forward[i] = getFabrikPoint(forward[i-1], startToEnd, len[i-1]);
+    }
 
-    forward[1] = secondPoint;
-    forward[2] = thirdPoint;
-    forward[3] = fourthPoint;
+    //PVector secondPoint = getFabrikPoint(startPoint, startToEnd, len[0]);
+    //PVector thirdPoint = getFabrikPoint(forward[1], startToEnd, len[1]);
+    //PVector fourthPoint = getFabrikPoint(forward[2], startToEnd, len[2]);
+
+    //forward[1] = secondPoint;
+    //forward[2] = thirdPoint;
+    //forward[3] = fourthPoint;
   }
 
   //simple reachability check, may expand on later
   boolean reachable() {
     boolean canReach = false;
-
     float max = lengthBtwPoints(startPoint, endPoint.point);
-    float chainSum = lengthBtwPoints(forward[0], forward[1]) + lengthBtwPoints(forward[1], forward[2]) + lengthBtwPoints(forward[2], forward[3]);
+    float chainSum = 0;
+
+    for(int i = 0; i < forward.length - 1; i++) {
+      chainSum += lengthBtwPoints(forward[i], forward[i+1]);
+    }
 
     if(chainSum >= max) {
       canReach = true;
