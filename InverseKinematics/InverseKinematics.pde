@@ -22,11 +22,11 @@ void setup() {
   joints = new PVector[4];
 
   joints[0] = new PVector(width/2, height);
-  joints[1] = new PVector(width/2, 700);
-  joints[2] = new PVector(width/2, 600);
-  joints[3] = new PVector(width/2, 500);
+  joints[1] = new PVector(width/2, 650);
+  joints[2] = new PVector(width/2, 500);
+  joints[3] = new PVector(width/2, 350);
   
-  endPoint = new EndEffector(width/2, height/2, 20);
+  endPoint = new EndEffector(width/2 + 100, height/2, 20);
 
   IK = new Chain(joints, endPoint);
 
@@ -52,7 +52,9 @@ void draw() {
   if(programMode == mode.DEMO) {
     doDemo();
   } else {
-   endPoint.display();
+    IK.fabrik();
+    IK.display();
+    endPoint.display();
   }
 
 }

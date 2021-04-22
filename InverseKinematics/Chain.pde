@@ -3,6 +3,7 @@ class Chain {
   PVector forward[];
   PVector backward[];
   PVector startPoint;
+  float len[];
   EndEffector endPoint;
 
   PVector demo[];
@@ -16,12 +17,17 @@ class Chain {
 
     forward = new PVector[points.length];
     backward = new PVector[points.length];
+    len = new float[forward.length - 1];
     
     for(int i = 0; i < points.length; i++) {
       this.forward[i] = new PVector(points[i].x, points[i].y);
     }
 
-    this.endPoint = new EndEffector(endPoint.point.x,  endPoint.point.y, endPoint.radius);
+    for(int i = 0; i < len.length; i++) {
+      len[i] = lengthBtwPoints(this.forward[i], this.forward[i+1]);
+    }
+
+    this.endPoint = endPoint;
   }
 
   //simply using this for a static demo, going to be assuming a lot of stuff
@@ -42,31 +48,87 @@ class Chain {
   }
 
   void fabrik() {
-    if(!reachable()) {return;}
+    if(!reachable()) {notReachable(); return;}
 
     for(int i = 0; i < maxIterations; i++) {
       backwards();
       forwards();
 
-      //check distance with delta
+      if(lengthBtwPoints(forward[forward.length-1], endPoint.point) < delta) {
+        break;
+      }
     }
     //done enough iterations
   }
 
   void forwards() {
+    PVector temp = new PVector(0,0);
 
+    forward[0] = startPoint;
+    temp.x = backward[1].x - forward[0].x;
+    temp.y = backward[1].y - forward[0].y;
+
+    for(int i = 1; i < forward.length; i++) {
+      forward[i] = getFabrikPoint(forward[i-1], temp, len[i-1]);
+
+      if(i != forward.length-1) {
+        temp.x = backward[i+1].x - forward[i].x;
+        temp.y = backward[i+1].y - forward[i].y;
+      }
+    }
   }
 
   void backwards() {
+    PVector temp = new PVector(0,0);
 
+    backward[backward.length-1] = endPoint.point;
+    temp.x = forward[backward.length-2].x - backward[backward.length-1].x;
+    temp.y = forward[backward.length-2].y - backward[backward.length-1].y;
+
+    for(int i = backward.length - 2; i > -1; i--) {
+      backward[i] = getFabrikPoint(backward[i+1], temp, len[i]);
+
+      if(i != 0) {
+        temp.x = forward[i-1].x - backward[i].x;
+        temp.y = forward[i-1].y - backward[i].y;
+      }
+    }
   }
 
+  void notReachable() {
+    PVector startToEnd = new PVector(endPoint.point.x - startPoint.x, endPoint.point.y - startPoint.y);    
+
+    PVector secondPoint = getFabrikPoint(startPoint, startToEnd, len[0]);
+    PVector thirdPoint = getFabrikPoint(forward[1], startToEnd, len[1]);
+    PVector fourthPoint = getFabrikPoint(forward[2], startToEnd, len[2]);
+
+    forward[1] = secondPoint;
+    forward[2] = thirdPoint;
+    forward[3] = fourthPoint;
+  }
+
+  //simple reachability check, may expand on later
   boolean reachable() {
-    return true;
+    boolean canReach = false;
+
+    float max = lengthBtwPoints(startPoint, endPoint.point);
+    float chainSum = lengthBtwPoints(forward[0], forward[1]) + lengthBtwPoints(forward[1], forward[2]) + lengthBtwPoints(forward[2], forward[3]);
+
+    if(chainSum >= max) {
+      canReach = true;
+    }
+
+    return canReach;
   }
 
   void display() {
+    for(int i = 0; i < forward.length; i++) {
+      circle(forward[i].x, forward[i].y, 30);
 
+      if(i+1 < forward.length) {
+        line(forward[i].x, forward[i].y, forward[i+1].x, forward[i+1].y);
+      }
+    }
   }
 
   void fabrikDemo() {
