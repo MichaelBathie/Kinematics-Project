@@ -24,4 +24,10 @@ class EndEffector {
     stroke(1,0,0);
     circle(this.point.x, this.point.y, radius);
   }
+  
+  void display(PVector colour) {
+    fill(colour.x, colour.y, colour.z);
+    stroke(colour.x, colour.y, colour.z);
+    circle(this.point.x, this.point.y, radius);
+  }
 }

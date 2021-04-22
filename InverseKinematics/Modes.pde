@@ -1,9 +1,10 @@
 final char DEMO = 'd';
 final char NORMAL = 'n';
+final char BRANCH = 'b';
 final char NEXT_STEP = ' '; 
 
 enum mode {
-  DEMO, NORMAL
+  DEMO, NORMAL, BRANCH
 };
 
 mode programMode = mode.DEMO;
@@ -16,6 +17,10 @@ void keyPressed()
 
   if(key == NORMAL) {
     programMode = mode.NORMAL;
+  }
+
+  if(key == BRANCH) {
+    programMode = mode.BRANCH;
   }
 
   if(key == NEXT_STEP) {

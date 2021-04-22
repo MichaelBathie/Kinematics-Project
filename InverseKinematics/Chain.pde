@@ -9,9 +9,13 @@ class Chain {
   PVector demo[];
   int demoCounter;
 
+  Chain parent = null;
+  int whichBranch;
+
   float delta = 0.01; //if our calculated endpoint and actual end effector are "close enough"
   int maxIterations = 10; //if we go through 10 iterations just stop and say it's good enough 
 
+  //standard constructor for creating the chain
   Chain(PVector points[], EndEffector endPoint) {
     this.startPoint = new PVector(points[0].x, points[0].y);
 
@@ -28,6 +32,28 @@ class Chain {
     }
 
     this.endPoint = endPoint;
+  }
+
+  //for branch like structures
+  Chain(PVector points[], EndEffector endPoint, Chain parent, int whichBranch) {
+    this.startPoint = new PVector(points[0].x, points[0].y);
+
+    forward = new PVector[points.length];
+    backward = new PVector[points.length];
+    len = new float[forward.length - 1];
+    
+    for(int i = 0; i < points.length; i++) {
+      this.forward[i] = new PVector(points[i].x, points[i].y);
+    }
+
+    for(int i = 0; i < len.length; i++) {
+      len[i] = lengthBtwPoints(this.forward[i], this.forward[i+1]);
+    }
+
+    this.endPoint = endPoint;
+
+    this.parent = parent;
+    this.whichBranch = whichBranch;
   }
 
   //simply using this for a static demo, going to be assuming a lot of stuff
@@ -48,6 +74,7 @@ class Chain {
   }
 
   void fabrik() {
+    if(parent != null) {startPoint = parent.forward[whichBranch];}
     if(!reachable()) {notReachable(); return;}
 
     for(int i = 0; i < maxIterations; i++) {
@@ -98,6 +125,7 @@ class Chain {
   void notReachable() {
     PVector startToEnd = new PVector(endPoint.point.x - startPoint.x, endPoint.point.y - startPoint.y);    
 
+    forward[0] = startPoint;
     for(int i = 1; i < forward.length; i++) {
       forward[i] = getFabrikPoint(forward[i-1], startToEnd, len[i-1]);
     }

@@ -4,9 +4,12 @@
 */
 
 PVector joints[];
+PVector branchJoints[];
 EndEffector endPoint;
+EndEffector branchEnds[];
 
 Chain IK;
+Chain branch[];
 
 
 PVector jointDemo[];
@@ -18,6 +21,21 @@ void setup() {
   size(800,800);
   colorMode(RGB, 1.0f);
   strokeWeight(3);
+
+  /*=== DEMO SETUP ===*/
+  jointDemo = new PVector[4];
+
+  jointDemo[0] = new PVector(100, 200);
+  jointDemo[1] = new PVector(200, 500);
+  jointDemo[2] = new PVector(400, 700);
+  jointDemo[3] = new PVector(600, 600);
+
+  endPointDemo = new EndEffector(700, 300, 20);
+
+  IKDemo = new Chain(jointDemo, endPointDemo, "demonstration");  
+  IKDemo.fabrikDemo();
+
+  /*==================*/
 
   joints = new PVector[5];
 
@@ -31,18 +49,25 @@ void setup() {
 
   IK = new Chain(joints, endPoint);
 
+  branchJoints = new PVector[5];
+  branchEnds = new EndEffector[5];
+  branch = new Chain[5];
 
-  jointDemo = new PVector[4];
+  int newHeight = height / joints.length;
+  for(int i = 0; i < joints.length; i++) {
+    branchJoints[0] = joints[i];
+    branchJoints[1] = new PVector(width/2, branchJoints[0].y - 50);
+    branchJoints[2] = new PVector(width/2, branchJoints[0].y - 100);
+    branchJoints[3] = new PVector(width/2, branchJoints[0].y - 150);
+    branchJoints[4] = new PVector(width/2, branchJoints[0].y - 200);
 
-  jointDemo[0] = new PVector(100, 200);
-  jointDemo[1] = new PVector(200, 500);
-  jointDemo[2] = new PVector(400, 700);
-  jointDemo[3] = new PVector(600, 600);
-
-  endPointDemo = new EndEffector(700, 300, 20);
-
-  IKDemo = new Chain(jointDemo, endPointDemo, "demonstration");  
-  IKDemo.fabrikDemo();
+    if(i % 2 == 0) {
+      branchEnds[i] = new EndEffector(width/4, i*newHeight + (newHeight/2), 20);
+    } else {
+      branchEnds[i] = new EndEffector(3*width/4, i*newHeight + (newHeight/2), 20);
+    }
+    branch[i] = new Chain(branchJoints, branchEnds[i], IK, i);
+  }
 }
 
 void draw() {
@@ -52,10 +77,22 @@ void draw() {
 
   if(programMode == mode.DEMO) {
     doDemo();
-  } else {
+  } else if(programMode == mode.NORMAL) {
     IK.fabrik();
     IK.display();
     endPoint.display();
+  } else if(programMode == mode.BRANCH) {
+    IK.fabrik();
+    IK.display();
+
+    for(int i = 0; i < branch.length; i++) {
+      stroke(0,0,0);
+      fill(0,0,0);
+      branch[i].fabrik();
+      branch[i].display();
+      branchEnds[i].display();
+    }
+    endPoint.display(new PVector(0,1,0));
   }
 
 }
@@ -65,7 +102,15 @@ void mouseDragged() {
   if(endPoint.checkBounds()) {
     endPoint.point.x = mouseX;
     endPoint.point.y = mouseY;
+    return;
   } 
+  for(int i = 0; i < branchEnds.length; i++) {
+    if(branchEnds[i].checkBounds()) {
+      branchEnds[i].point.x = mouseX;
+      branchEnds[i].point.y = mouseY;
+      return;
+    } 
+  }
 }
 
 //hard coded demo
