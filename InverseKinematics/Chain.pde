@@ -101,14 +101,6 @@ class Chain {
     for(int i = 1; i < forward.length; i++) {
       forward[i] = getFabrikPoint(forward[i-1], startToEnd, len[i-1]);
     }
-
-    //PVector secondPoint = getFabrikPoint(startPoint, startToEnd, len[0]);
-    //PVector thirdPoint = getFabrikPoint(forward[1], startToEnd, len[1]);
-    //PVector fourthPoint = getFabrikPoint(forward[2], startToEnd, len[2]);
-
-    //forward[1] = secondPoint;
-    //forward[2] = thirdPoint;
-    //forward[3] = fourthPoint;
   }
 
   //simple reachability check, may expand on later
