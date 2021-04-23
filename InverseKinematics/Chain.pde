@@ -1,5 +1,6 @@
 class Chain {
 
+  PVector originalPoints[];
   PVector forward[];
   PVector backward[];
   PVector startPoint;
@@ -14,17 +15,20 @@ class Chain {
 
   float delta = 0.01; //if our calculated endpoint and actual end effector are "close enough"
   int maxIterations = 10; //if we go through 10 iterations just stop and say it's good enough 
+  float constraintAngle = 45;
 
   //standard constructor for creating the chain
   Chain(PVector points[], EndEffector endPoint) {
     this.startPoint = new PVector(points[0].x, points[0].y);
 
     forward = new PVector[points.length];
+    originalPoints = new PVector[points.length];
     backward = new PVector[points.length];
     len = new float[forward.length - 1];
     
     for(int i = 0; i < points.length; i++) {
       this.forward[i] = new PVector(points[i].x, points[i].y);
+      this.originalPoints[i] = new PVector(points[i].x, points[i].y);
     }
 
     for(int i = 0; i < len.length; i++) {
@@ -158,6 +162,10 @@ class Chain {
     }
   }
 
+  void displayMob() {
+    circle(forward[forward.length-1].x, forward[forward.length-1].y, 30);
+  }
+
   void fabrikDemo() {
     float lengths[] = {
       lengthBtwPoints(demo[0], demo[1]),
@@ -237,5 +245,17 @@ class Chain {
     for(int i = 0; i < demo.length; i ++) {
       print(demo[i].x + " " + demo[i].y + " \n");
     }
+  }
+
+  float angleBetweenLinesInRad(PVector line1Start, PVector line1End, PVector line2Start, PVector line2End) {
+    float a = line1End.x - line1Start.x;
+    float b = line1End.y - line1Start.y;
+    float c = line2End.x - line2Start.x;
+    float d = line2End.y - line2Start.y;
+
+    float atanA = atan2(a, b);
+    float atanB = atan2(c, d);
+
+    return atanA - atanB;
   }
 }

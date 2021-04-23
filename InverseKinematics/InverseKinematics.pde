@@ -20,6 +20,12 @@ EndEffector endPointDemo;
 
 Chain IKDemo;
 
+PVector member[];
+EndEffector mobEnd;
+EndEffector mobReal[];
+Chain mob[];
+float mobAngle;
+
 void setup() {
   size(800,800);
   colorMode(RGB, 1.0f);
@@ -81,6 +87,41 @@ void setup() {
   branchExtra[4] = new PVector(width/2, branchExtra[0].y - 200);
   bExtra = new Chain(branchExtra, branchExtraEnd, branch[2], 2);
 
+
+  member = new PVector[5];
+  mob = new Chain[800];
+  mobReal = new EndEffector[800];
+  mobAngle = PI/400;
+  float mobRadius = 400;
+  mobEnd = new EndEffector(width/2 + 100, height/2, 20);
+
+  for(int i = 0; i < 800; i++) {
+    float x = mobRadius * cos(i*mobAngle) + width/2;
+    float y = mobRadius * sin(i*mobAngle) + height/2;
+
+    if(i%2 == 0) {
+      if(x <= 400) {
+        x = random(-300, 300);
+      } else {
+        x = random(500, 1100);
+      }
+    } else {
+      if(y <= 400) {
+        y = random(-300, 300);
+      } else {
+        y = random(500, 1100);
+      }
+    }
+    
+    member[0] = new PVector(x, y);
+    member[1] = new PVector(x + 50, y + 50);
+    member[2] = new PVector(x + 100, y + 100);
+    member[3] = new PVector(x + 150, y + 150);
+    member[4] = new PVector(x + 200, y + 200);
+    mobReal[i] = new EndEffector(width/2 + 100, height/2 + 100, 20);
+
+    mob[i] = new Chain(member, mobReal[i]);
+  }
 }
 
 void draw() {
@@ -115,13 +156,33 @@ void draw() {
     IK.display();
     endPoint.display(new PVector(1,0,0));
   } else if(programMode == mode.CONSTRAINT) {
-
+    IK.fabrik();
+    IK.display();
+    endPoint.display();
+  } else {
+    stroke(0,1,0);
+    for(int i = 0; i < mob.length; i++) {
+      mob[i].fabrik();
+      mob[i].displayMob();
+    }
+    mobEnd.display();
   }
 
 }
 
 //can put check in a loop for more than one end point
 void mouseDragged() {
+  if(programMode == mode.MOB && mobEnd.checkBounds()) {
+    PVector temp;
+    mobEnd.point.x = mouseX;
+    mobEnd.point.y = mouseY;
+    for(int i = 0; i < mobReal.length; i++) {
+      temp = getMobPoint(i);
+      mobReal[i].point.x = temp.x;
+      mobReal[i].point.y = temp.y;
+    }
+    return;
+  } 
   if(endPoint.checkBounds()) {
     endPoint.point.x = mouseX;
     endPoint.point.y = mouseY;
@@ -139,6 +200,13 @@ void mouseDragged() {
       return;
     } 
   }
+}
+
+PVector getMobPoint(int num) {
+  float x = 60 * cos(num*mobAngle);
+  float y = 60 * sin(num*mobAngle);
+
+  return new PVector(x+mouseX, y+mouseY);
 }
 
 //hard coded demo
