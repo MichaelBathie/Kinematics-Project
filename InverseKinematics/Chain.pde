@@ -15,7 +15,7 @@ class Chain {
 
   float delta = 0.01; //if our calculated endpoint and actual end effector are "close enough"
   int maxIterations = 10; //if we go through 10 iterations just stop and say it's good enough 
-  float constraintAngle = 45;
+  float constraintAngle = 75;
 
   //standard constructor for creating the chain
   Chain(PVector points[], EndEffector endPoint) {
@@ -96,14 +96,17 @@ class Chain {
   }
 
   void constraint() {
+    float u;
     PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
     PVector c = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
     b.normalize();
     c.normalize();
+    u = atan2(b.y, b.x) - atan2(c.y,c.x);
     float a = acos(b.dot(c));
 
     if(a > radians(constraintAngle)) {
-      if(forward[1].x <= width/2) {
+      print(u+" ");
+      if(u > 0) {
         b.rotate(radians(-1*constraintAngle));
       } else {
         b.rotate(radians(constraintAngle));
@@ -115,10 +118,12 @@ class Chain {
     c = new PVector(forward[2].x - forward[1].x, forward[2].y - forward[1].y);
     b.normalize();
     c.normalize();
+    u = atan2(b.y, b.x) - atan2(c.y,c.x);
     a = acos(b.dot(c));
 
     if(a > radians(constraintAngle)) {
-      if(forward[2].x <= width/2) {
+      print(u+" ");
+      if(u > 0) {
         b.rotate(radians(-1*constraintAngle));
       } else {
         b.rotate(radians(constraintAngle));
@@ -130,10 +135,12 @@ class Chain {
     c = new PVector(forward[3].x - forward[2].x, forward[3].y - forward[2].y);
     b.normalize();
     c.normalize();
+    u = atan2(b.y, b.x) - atan2(c.y,c.x);
     a = acos(b.dot(c));
 
     if(a > radians(constraintAngle)) {
-      if(forward[3].x <= width/2) {
+      print(u+" ");
+      if(u > 0) {
         b.rotate(radians(-1*constraintAngle));
       } else {
         b.rotate(radians(constraintAngle));
@@ -145,10 +152,12 @@ class Chain {
     c = new PVector(forward[4].x - forward[3].x, forward[4].y - forward[3].y);
     b.normalize();
     c.normalize();
+    u = atan2(b.y, b.x) - atan2(c.y,c.x);
     a = acos(b.dot(c));
 
     if(a > radians(constraintAngle)) {
-      if(forward[4].x <= width/2) {
+      print(u+"\n");
+      if(u > 0) {
         b.rotate(radians(-1*constraintAngle));
       } else {
         b.rotate(radians(constraintAngle));

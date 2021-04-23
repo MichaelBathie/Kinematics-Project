@@ -49,10 +49,10 @@ void setup() {
   joints = new PVector[5];
 
   joints[0] = new PVector(width/2, height);
-  joints[1] = new PVector(width/2, 700);
-  joints[2] = new PVector(width/2, 600);
-  joints[3] = new PVector(width/2, 500);
-  joints[4] = new PVector(width/2, 400);
+  joints[1] = new PVector(width/2, 650);
+  joints[2] = new PVector(width/2, 500);
+  joints[3] = new PVector(width/2, 350);
+  joints[4] = new PVector(width/2, 200);
   
   endPoint = new EndEffector(width/2 + 100, height/2, 20);
 
