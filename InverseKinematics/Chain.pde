@@ -95,6 +95,7 @@ class Chain {
 
   }
 
+  //buggy version of constraints
   void constraint() {
     float u;
     PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
@@ -168,7 +169,7 @@ class Chain {
 
   }
   
-
+  //forward part of FABRIK
   void forwards() {
     PVector temp = new PVector(0,0);
 
@@ -186,6 +187,7 @@ class Chain {
     }
   }
 
+  //backward part of FABRIK
   void backwards() {
     PVector temp = new PVector(0,0);
 
@@ -243,6 +245,7 @@ class Chain {
     circle(forward[forward.length-1].x, forward[forward.length-1].y, 30);
   }
 
+  //hard coded display for the demo
   void fabrikDemo() {
     float lengths[] = {
       lengthBtwPoints(demo[0], demo[1]),

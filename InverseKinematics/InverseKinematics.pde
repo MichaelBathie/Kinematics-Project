@@ -2,15 +2,20 @@
   Michael Bathie, 7835010
   IK demonstration using FABRIK
 */
+ArrayList<PVector> trackClicks;
+PVector generate[];
+Chain g;
 
 PVector joints[];
 PVector branchJoints[];
 PVector branchExtra[];
+PVector manyJoints[];
 EndEffector endPoint;
 EndEffector branchEnds[];
 EndEffector branchExtraEnd;
 
 Chain IK;
+Chain longChain;
 Chain branch[];
 Chain bExtra;
 
@@ -31,6 +36,8 @@ void setup() {
   colorMode(RGB, 1.0f);
   strokeWeight(3);
 
+  trackClicks= new ArrayList<PVector>();
+
   /*=== DEMO SETUP ===*/
   jointDemo = new PVector[4];
 
@@ -46,6 +53,8 @@ void setup() {
 
   /*==================*/
 
+  /*=== STANDARD SETUP ===*/
+
   joints = new PVector[5];
 
   joints[0] = new PVector(width/2, height);
@@ -57,6 +66,10 @@ void setup() {
   endPoint = new EndEffector(width/2 + 100, height/2, 20);
 
   IK = new Chain(joints, endPoint);
+
+  /*======================*/
+
+  /*=== BRANCH SETUP ===*/
 
   branchJoints = new PVector[5];
   branchEnds = new EndEffector[5];
@@ -87,6 +100,9 @@ void setup() {
   branchExtra[4] = new PVector(width/2, branchExtra[0].y - 200);
   bExtra = new Chain(branchExtra, branchExtraEnd, branch[2], 2);
 
+  /*====================*/
+
+  /*=== MOB SETUP ===*/
 
   member = new PVector[5];
   mob = new Chain[800];
@@ -122,6 +138,20 @@ void setup() {
 
     mob[i] = new Chain(member, mobReal[i]);
   }
+
+  /*=================*/
+
+  /*=== LONG CHAIN SETUP ===*/
+
+  manyJoints = new PVector[20];
+  manyJoints[0] = new PVector(width/2, height);
+  int yAdd = 50;
+  for(int i = 1; i < manyJoints.length; i++) {
+    manyJoints[i] = new PVector(width/2, height - i*yAdd);
+  }
+  longChain = new Chain(manyJoints, endPoint);
+
+  /*========================*/
 }
 
 void draw() {
@@ -131,10 +161,12 @@ void draw() {
 
   if(programMode == mode.DEMO) {
     doDemo();
+
   } else if(programMode == mode.NORMAL) {
     IK.fabrik();
     IK.display();
     endPoint.display();
+
   } else if(programMode == mode.BRANCH) {
     stroke(0,0,0.3);
     fill(0,0,0.3);
@@ -155,22 +187,42 @@ void draw() {
     IK.fabrik();
     IK.display();
     endPoint.display(new PVector(1,0,0));
+
   } else if(programMode == mode.CONSTRAINT) {
     IK.fabrik();
     IK.display();
     endPoint.display();
-  } else {
+
+  } else if(programMode == mode.MOB){
     stroke(0,1,0);
     for(int i = 0; i < mob.length; i++) {
       mob[i].fabrik();
       mob[i].displayMob();
     }
     mobEnd.display();
+
+  } else if(programMode == mode.LONG) {
+    longChain.fabrik();
+    longChain.display();
+    endPoint.display();
+
+  } else if(programMode == mode.GEN) {
+    PVector temp;
+    for(int i = 0; i < trackClicks.size(); i++) {
+      temp = trackClicks.get(i);
+      circle(temp.x, temp.y, 30);
+    }
+  } else if(programMode == mode.GO) {
+    if(generate != null && generate.length > 2) {
+      g.fabrik();
+      g.display();
+      endPoint.display();
+    }
   }
 
 }
 
-//can put check in a loop for more than one end point
+//loops through all endpoints and adjusts them
 void mouseDragged() {
   if(programMode == mode.MOB && mobEnd.checkBounds()) {
     PVector temp;
@@ -202,11 +254,33 @@ void mouseDragged() {
   }
 }
 
+void mouseClicked() {
+  if(programMode == mode.GEN) {
+    trackClicks.add(new PVector(mouseX, mouseY));
+  }
+}
+
 PVector getMobPoint(int num) {
   float x = 60 * cos(num*mobAngle);
   float y = 60 * sin(num*mobAngle);
 
   return new PVector(x+mouseX, y+mouseY);
+}
+
+void finalize() {
+  generate = new PVector[trackClicks.size()];
+  for(int i = 0; i < trackClicks.size(); i++) {
+    generate[i] = trackClicks.get(i);
+  }
+  g = new Chain(generate, endPoint);
+}
+
+void wipe() {
+  PVector temp;
+  for(int i = trackClicks.size() - 1; i > -1; i--) {
+    trackClicks.remove(trackClicks.get(i)); 
+  }
+  generate = new PVector[0];
 }
 
 //hard coded demo

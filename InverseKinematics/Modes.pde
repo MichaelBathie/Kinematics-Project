@@ -3,10 +3,14 @@ final char NORMAL = 'n';
 final char BRANCH = 'b';
 final char CONSTRAINT = 'c';
 final char MOB = 'm';
+final char LONG = 'l';
+final char GEN = 'g';
+final char GO = ENTER;
+final char WIPE = 'w';
 final char NEXT_STEP = ' '; 
 
 enum mode {
-  DEMO, NORMAL, BRANCH, CONSTRAINT, MOB;
+  DEMO, NORMAL, BRANCH, CONSTRAINT, MOB, LONG, GEN, GO;
 };
 
 mode programMode = mode.DEMO;
@@ -31,6 +35,23 @@ void keyPressed()
 
   if(key == MOB) {
     programMode = mode.MOB;
+  }
+
+  if(key == LONG) {
+    programMode = mode.LONG;
+  }
+
+  if(key == GEN) {
+    programMode = mode.GEN;
+  }
+
+  if(key == GO && programMode == mode.GEN) {
+    finalize();
+    programMode = mode.GO;
+  }
+
+  if(key == WIPE) {
+    wipe();
   }
 
   if(key == NEXT_STEP) {
