@@ -8,7 +8,10 @@ final char GEN = 'g';
 final char GO = ENTER;
 final char WIPE = 'w';
 final char FOLLOW = 'f';
+final char TENT = 't';
 final char NEXT_STEP = ' '; 
+
+boolean tent = false;
 
 enum mode {
   DEMO, NORMAL, BRANCH, CONSTRAINT, MOB, LONG, GEN, GO, FOLLOW;
@@ -57,6 +60,10 @@ void keyPressed()
 
   if(key == FOLLOW) {
     programMode = mode.FOLLOW;
+  }
+
+  if(key == TENT) {
+    tent = !tent;
   }
 
   if(key == NEXT_STEP) {

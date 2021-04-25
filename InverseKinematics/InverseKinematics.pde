@@ -10,6 +10,7 @@ PVector joints[];
 PVector branchJoints[];
 PVector branchExtra[];
 PVector manyJoints[];
+PVector tentJoints[];
 EndEffector endPoint;
 EndEffector branchEnds[];
 EndEffector branchExtraEnd;
@@ -18,6 +19,7 @@ Chain IK;
 Chain longChain;
 Chain branch[];
 Chain bExtra;
+Chain tentChain[];
 
 
 PVector jointDemo[];
@@ -152,6 +154,26 @@ void setup() {
   longChain = new Chain(manyJoints, endPoint);
 
   /*========================*/
+
+  /*=== TENT SETUP ===*/
+
+  tentJoints = new PVector[10];
+  tentChain = new Chain[100];
+  float tentAngle = PI/50;
+  float tentRadius = 200;
+
+  for(int i = 0; i < tentChain.length; i++) {
+    float x = tentRadius * cos(i*tentAngle) + width/2;
+    float y = tentRadius * sin(i*tentAngle) + height/2;
+
+    tentJoints[0] = new PVector(x,y);
+    for(int j = 1; j < tentJoints.length; j++) {
+      tentJoints[j] = new PVector(x+(j*20), y+(j*20));
+    }
+
+    tentChain[i] = new Chain(tentJoints, endPoint);
+  }
+  /*==================*/
 }
 
 void draw() {
@@ -162,7 +184,7 @@ void draw() {
   if(programMode == mode.DEMO) {
     doDemo();
 
-  } else if(programMode == mode.NORMAL || programMode == mode.FOLLOW) {
+  } else if(programMode == mode.NORMAL) {
     IK.fabrik();
     IK.display();
     endPoint.display();
@@ -197,7 +219,7 @@ void draw() {
     stroke(0,1,0);
     for(int i = 0; i < mob.length; i++) {
       mob[i].fabrik();
-      mob[i].displayMob();
+      mob[i].displayMob(i%3);
     }
     mobEnd.display();
 
@@ -216,6 +238,18 @@ void draw() {
     if(generate != null && generate.length > 2) {
       g.fabrik();
       g.display();
+      endPoint.display();
+    }
+  } else if(programMode == mode.FOLLOW) {
+    if(!tent) {
+      IK.fabrik();
+      IK.display();
+      endPoint.display();
+    } else {
+      for(int i = 0; i < tentChain.length; i++) {
+        tentChain[i].fabrik();
+        tentChain[i].displayTent();
+      }
       endPoint.display();
     }
   }

@@ -105,10 +105,12 @@ class Chain {
       if(lengthBtwPoints(forward[forward.length-1], endPoint.point) < delta) {
         break;
       }
+      if(programMode == mode.CONSTRAINT)
+        constraint();
     }
-    //done enough iterations
     if(programMode == mode.CONSTRAINT)
       constraint();
+    //done enough iterations
 
   }
 
@@ -172,11 +174,12 @@ class Chain {
     PVector c = new PVector(forward[4].x - forward[3].x, forward[4].y - forward[3].y);
     b.normalize();
     c.normalize();
-    u = atan2(b.y, b.x) - atan2(c.y,c.x);
+    u = atan2(c.y,c.x) - atan2(b.y, b.x);
     float a = acos(b.dot(c));
 
+    print(a+" ");
+    print(u+" \n");
     if(a > radians(constraintAngle)) {
-      print(u+"\n");
       if(u > 0) {
         b.rotate(radians(-1*constraintAngle));
       } else {
@@ -287,8 +290,33 @@ class Chain {
 
 
 
-  void displayMob() {
+  void displayMob(int x) {
+    if(x == 0) {
+      stroke(0,0,0.3);
+      fill(0,0,0.3);
+    }
+    else if(x == 1) {
+      stroke(0,0.3,0);
+      fill(0,0.3,0);
+    }
+    else {
+      stroke(0.3,0.3,0);
+      fill(0.3,0.3,0);
+    }
     circle(forward[forward.length-1].x, forward[forward.length-1].y, 30);
+  }
+
+  void displayTent() {
+    for(int i = 0; i < forward.length; i ++) {
+      if(i+1 < forward.length) {
+        if(i%2 == 0) {
+          stroke(1,0,0);
+        } else {
+          stroke(1,1,0);
+        }
+        line(forward[i].x, forward[i].y, forward[i+1].x, forward[i+1].y);
+      }
+    }
   }
 
 
