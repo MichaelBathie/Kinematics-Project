@@ -162,7 +162,7 @@ void draw() {
   if(programMode == mode.DEMO) {
     doDemo();
 
-  } else if(programMode == mode.NORMAL) {
+  } else if(programMode == mode.NORMAL || programMode == mode.FOLLOW) {
     IK.fabrik();
     IK.display();
     endPoint.display();

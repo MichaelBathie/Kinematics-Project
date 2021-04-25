@@ -16,6 +16,10 @@ class Chain {
   float delta = 0.01; //if our calculated endpoint and actual end effector are "close enough"
   int maxIterations = 10; //if we go through 10 iterations just stop and say it's good enough 
   float constraintAngle = 75;
+  float max;
+  float chainSum;
+
+
 
   //standard constructor for creating the chain
   Chain(PVector points[], EndEffector endPoint) {
@@ -37,6 +41,8 @@ class Chain {
 
     this.endPoint = endPoint;
   }
+
+
 
   //for branch like structures
   Chain(PVector points[], EndEffector endPoint, Chain parent, int whichBranch) {
@@ -60,6 +66,8 @@ class Chain {
     this.whichBranch = whichBranch;
   }
 
+
+
   //simply using this for a static demo, going to be assuming a lot of stuff
   Chain(PVector points[], EndEffector endPoint, String demonstration) {
     this.startPoint = new PVector(points[0].x, points[0].y);
@@ -77,9 +85,18 @@ class Chain {
     this.demoCounter = 0;
   }
 
+
+
   void fabrik() {
     if(parent != null) {startPoint = parent.forward[whichBranch];}
-    if(!reachable()) {notReachable(); return;}
+    if(!reachable()) {
+      if(programMode == mode.FOLLOW) {
+        adjust();
+      } else {
+        notReachable(); 
+        return;
+      }
+    }
 
     for(int i = 0; i < maxIterations; i++) {
       backwards();
@@ -95,66 +112,68 @@ class Chain {
 
   }
 
+
+
   //buggy version of constraints
   void constraint() {
     float u;
-    PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
-    PVector c = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
+    //PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
+    //PVector c = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
+    //b.normalize();
+    //c.normalize();
+    //u = atan2(b.y, b.x) - atan2(c.y,c.x);
+    //float a = acos(b.dot(c));
+
+    //if(a > radians(constraintAngle)) {
+      //print(u+" ");
+      //if(u > 0) {
+        //b.rotate(radians(-1*constraintAngle));
+      //} else {
+        //b.rotate(radians(constraintAngle));
+      //}
+      //forward[1] = getFabrikPoint(forward[0], b, len[0]); 
+    //}
+////////////////////////////////////////////////////////////////
+    //b = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
+    //c = new PVector(forward[2].x - forward[1].x, forward[2].y - forward[1].y);
+    //b.normalize();
+    //c.normalize();
+    //u = atan2(b.y, b.x) - atan2(c.y,c.x);
+    //a = acos(b.dot(c));
+
+    //if(a > radians(constraintAngle)) {
+      //print(u+" ");
+      //if(u > 0) {
+        //b.rotate(radians(-1*constraintAngle));
+      //} else {
+        //b.rotate(radians(constraintAngle));
+      //}
+      //forward[2] = getFabrikPoint(forward[1], b, len[1]); 
+    //}
+////////////////////////////////////////////////////////////////
+    //b = new PVector(forward[2].x - forward[1].x, forward[2].y - forward[1].y);
+    //c = new PVector(forward[3].x - forward[2].x, forward[3].y - forward[2].y);
+    //b.normalize();
+    //c.normalize();
+    //u = atan2(b.y, b.x) - atan2(c.y,c.x);
+    //a = acos(b.dot(c));
+
+    //if(a > radians(constraintAngle)) {
+      //print(u+" ");
+      //if(u > 0) {
+        //b.rotate(radians(-1*constraintAngle));
+      //} else {
+        //b.rotate(radians(constraintAngle));
+      //}
+      //forward[3] = getFabrikPoint(forward[2], b, len[2]); 
+    //}
+//////////////////////////////////////////////////////////////
+    PVector b = new PVector(forward[3].x - forward[2].x, forward[3].y - forward[2].y);
+    PVector c = new PVector(forward[4].x - forward[3].x, forward[4].y - forward[3].y);
     b.normalize();
     c.normalize();
     u = atan2(b.y, b.x) - atan2(c.y,c.x);
     float a = acos(b.dot(c));
-
-    if(a > radians(constraintAngle)) {
-      print(u+" ");
-      if(u > 0) {
-        b.rotate(radians(-1*constraintAngle));
-      } else {
-        b.rotate(radians(constraintAngle));
-      }
-      forward[1] = getFabrikPoint(forward[0], b, len[0]); 
-    }
-//////////////////////////////////////////////////////////////
-    b = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
-    c = new PVector(forward[2].x - forward[1].x, forward[2].y - forward[1].y);
-    b.normalize();
-    c.normalize();
-    u = atan2(b.y, b.x) - atan2(c.y,c.x);
-    a = acos(b.dot(c));
-
-    if(a > radians(constraintAngle)) {
-      print(u+" ");
-      if(u > 0) {
-        b.rotate(radians(-1*constraintAngle));
-      } else {
-        b.rotate(radians(constraintAngle));
-      }
-      forward[2] = getFabrikPoint(forward[1], b, len[1]); 
-    }
-//////////////////////////////////////////////////////////////
-    b = new PVector(forward[2].x - forward[1].x, forward[2].y - forward[1].y);
-    c = new PVector(forward[3].x - forward[2].x, forward[3].y - forward[2].y);
-    b.normalize();
-    c.normalize();
-    u = atan2(b.y, b.x) - atan2(c.y,c.x);
-    a = acos(b.dot(c));
-
-    if(a > radians(constraintAngle)) {
-      print(u+" ");
-      if(u > 0) {
-        b.rotate(radians(-1*constraintAngle));
-      } else {
-        b.rotate(radians(constraintAngle));
-      }
-      forward[3] = getFabrikPoint(forward[2], b, len[2]); 
-    }
-//////////////////////////////////////////////////////////////
-    b = new PVector(forward[3].x - forward[2].x, forward[3].y - forward[2].y);
-    c = new PVector(forward[4].x - forward[3].x, forward[4].y - forward[3].y);
-    b.normalize();
-    c.normalize();
-    u = atan2(b.y, b.x) - atan2(c.y,c.x);
-    a = acos(b.dot(c));
 
     if(a > radians(constraintAngle)) {
       print(u+"\n");
@@ -168,6 +187,8 @@ class Chain {
 
 
   }
+
+
   
   //forward part of FABRIK
   void forwards() {
@@ -187,6 +208,8 @@ class Chain {
     }
   }
 
+
+
   //backward part of FABRIK
   void backwards() {
     PVector temp = new PVector(0,0);
@@ -205,6 +228,8 @@ class Chain {
     }
   }
 
+
+
   void notReachable() {
     PVector startToEnd = new PVector(endPoint.point.x - startPoint.x, endPoint.point.y - startPoint.y);    
 
@@ -214,11 +239,13 @@ class Chain {
     }
   }
 
+
+
   //simple reachability check, may expand on later
   boolean reachable() {
     boolean canReach = false;
-    float max = lengthBtwPoints(startPoint, endPoint.point);
-    float chainSum = 0;
+    max = lengthBtwPoints(startPoint, endPoint.point);
+    chainSum = 0;
 
     for(int i = 0; i < forward.length - 1; i++) {
       chainSum += lengthBtwPoints(forward[i], forward[i+1]);
@@ -231,6 +258,23 @@ class Chain {
     return canReach;
   }
 
+
+
+  void adjust() {
+    PVector sToE = new PVector(endPoint.point.x - startPoint.x, endPoint.point.y - startPoint.y);
+    sToE.normalize();
+
+    float distance = max - chainSum;
+
+    sToE.mult(distance);
+    sToE.x += startPoint.x;
+    sToE.y += startPoint.y;
+
+    startPoint = sToE;
+  }
+
+
+
   void display() {
     for(int i = 0; i < forward.length; i++) {
       circle(forward[i].x, forward[i].y, 30);
@@ -241,9 +285,13 @@ class Chain {
     }
   }
 
+
+
   void displayMob() {
     circle(forward[forward.length-1].x, forward[forward.length-1].y, 30);
   }
+
+
 
   //hard coded display for the demo
   void fabrikDemo() {
@@ -310,6 +358,8 @@ class Chain {
     return workingVector;
   }
 
+
+
   float lengthBtwPoints(PVector point1, PVector point2) {
     float dx = abs(point2.x - point1.x);
     float dy = abs(point2.y - point1.y);
@@ -317,9 +367,13 @@ class Chain {
     return sqrt(sq(dx) + sq(dy));
   }
 
+
+
   void increaseCount() {
     this.demoCounter = (this.demoCounter + 1) % 16;
   }
+
+
 
   void debug() {
     for(int i = 0; i < demo.length; i ++) {

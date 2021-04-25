@@ -7,10 +7,11 @@ final char LONG = 'l';
 final char GEN = 'g';
 final char GO = ENTER;
 final char WIPE = 'w';
+final char FOLLOW = 'f';
 final char NEXT_STEP = ' '; 
 
 enum mode {
-  DEMO, NORMAL, BRANCH, CONSTRAINT, MOB, LONG, GEN, GO;
+  DEMO, NORMAL, BRANCH, CONSTRAINT, MOB, LONG, GEN, GO, FOLLOW;
 };
 
 mode programMode = mode.DEMO;
@@ -52,6 +53,10 @@ void keyPressed()
 
   if(key == WIPE) {
     wipe();
+  }
+
+  if(key == FOLLOW) {
+    programMode = mode.FOLLOW;
   }
 
   if(key == NEXT_STEP) {
