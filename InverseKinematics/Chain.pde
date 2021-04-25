@@ -105,8 +105,6 @@ class Chain {
       if(lengthBtwPoints(forward[forward.length-1], endPoint.point) < delta) {
         break;
       }
-      if(programMode == mode.CONSTRAINT)
-        constraint();
     }
     if(programMode == mode.CONSTRAINT)
       constraint();
@@ -118,77 +116,44 @@ class Chain {
 
   //buggy version of constraints
   void constraint() {
-    float u;
-    //PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
-    //PVector c = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
-    //b.normalize();
-    //c.normalize();
-    //u = atan2(b.y, b.x) - atan2(c.y,c.x);
-    //float a = acos(b.dot(c));
+    PVector u;
+    PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
+    PVector c = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
 
-    //if(a > radians(constraintAngle)) {
-      //print(u+" ");
-      //if(u > 0) {
-        //b.rotate(radians(-1*constraintAngle));
-      //} else {
-        //b.rotate(radians(constraintAngle));
-      //}
-      //forward[1] = getFabrikPoint(forward[0], b, len[0]); 
-    //}
-////////////////////////////////////////////////////////////////
-    //b = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
-    //c = new PVector(forward[2].x - forward[1].x, forward[2].y - forward[1].y);
-    //b.normalize();
-    //c.normalize();
-    //u = atan2(b.y, b.x) - atan2(c.y,c.x);
-    //a = acos(b.dot(c));
-
-    //if(a > radians(constraintAngle)) {
-      //print(u+" ");
-      //if(u > 0) {
-        //b.rotate(radians(-1*constraintAngle));
-      //} else {
-        //b.rotate(radians(constraintAngle));
-      //}
-      //forward[2] = getFabrikPoint(forward[1], b, len[1]); 
-    //}
-////////////////////////////////////////////////////////////////
-    //b = new PVector(forward[2].x - forward[1].x, forward[2].y - forward[1].y);
-    //c = new PVector(forward[3].x - forward[2].x, forward[3].y - forward[2].y);
-    //b.normalize();
-    //c.normalize();
-    //u = atan2(b.y, b.x) - atan2(c.y,c.x);
-    //a = acos(b.dot(c));
-
-    //if(a > radians(constraintAngle)) {
-      //print(u+" ");
-      //if(u > 0) {
-        //b.rotate(radians(-1*constraintAngle));
-      //} else {
-        //b.rotate(radians(constraintAngle));
-      //}
-      //forward[3] = getFabrikPoint(forward[2], b, len[2]); 
-    //}
-//////////////////////////////////////////////////////////////
-    PVector b = new PVector(forward[3].x - forward[2].x, forward[3].y - forward[2].y);
-    PVector c = new PVector(forward[4].x - forward[3].x, forward[4].y - forward[3].y);
     b.normalize();
     c.normalize();
-    u = atan2(c.y,c.x) - atan2(b.y, b.x);
+    u = b.cross(c);
     float a = acos(b.dot(c));
 
-    print(a+" ");
-    print(u+" \n");
     if(a > radians(constraintAngle)) {
-      if(u > 0) {
+      if(u.z <= 0) {
         b.rotate(radians(-1*constraintAngle));
       } else {
         b.rotate(radians(constraintAngle));
       }
-      forward[4] = getFabrikPoint(forward[3], b, len[3]); 
+      forward[1] = getFabrikPoint(forward[0], b, len[0]); 
     }
 
 
+    for(int i = 1; i < forward.length - 1; i++) {
+      b = new PVector(forward[i].x - forward[i-1].x, forward[i].y - forward[i-1].y);
+      c = new PVector(forward[i+1].x - forward[i].x, forward[i+1].y - forward[i].y);
+      b.normalize();
+      c.normalize();
+      u = b.cross(c);
+      a = acos(b.dot(c));
+
+      if(a > radians(constraintAngle)) {
+        //we're constrained! lets change the stroke
+        stroke(1,0,0);
+        if(u.z <= 0) {
+          b.rotate(radians(-1*constraintAngle));
+        } else {
+          b.rotate(radians(constraintAngle));
+        }
+        forward[i+1] = getFabrikPoint(forward[i], b, len[i]); 
+      }
+    }
   }
 
 
