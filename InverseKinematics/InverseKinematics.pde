@@ -14,6 +14,7 @@ PVector tentJoints[];
 EndEffector endPoint;
 EndEffector branchEnds[];
 EndEffector branchExtraEnd;
+EndEffector tentEnd[];
 
 Chain IK;
 Chain longChain;
@@ -164,6 +165,7 @@ void setup() {
 
   tentJoints = new PVector[10];
   tentChain = new Chain[100];
+  tentEnd = new EndEffector[100];
   float tentAngle = PI/50;
   float tentRadius = 200;
 
@@ -176,7 +178,8 @@ void setup() {
       tentJoints[j] = new PVector(x+(j*20), y+(j*20));
     }
 
-    tentChain[i] = new Chain(tentJoints, endPoint);
+    tentEnd[i] = new EndEffector(x,y,20);
+    tentChain[i] = new Chain(tentJoints, tentEnd[i]);
   }
   /*==================*/
 
@@ -286,6 +289,17 @@ void mouseDragged() {
     }
     return;
   } 
+  if(programMode == mode.FOLLOW && tent) {
+    PVector temp;
+    endPoint.point.x = mouseX;
+    endPoint.point.y = mouseY;
+    for(int i = 0; i < tentEnd.length; i++) {
+      temp = getFPoint(i);
+      tentEnd[i].point.x = temp.x;
+      tentEnd[i].point.y = temp.y;
+    }
+    return;
+  }
   if(endPoint.checkBounds()) {
     endPoint.point.x = mouseX;
     endPoint.point.y = mouseY;
@@ -324,6 +338,13 @@ PVector getMobPoint(int num) {
   float y = 60 * sin(num*mobAngle);
 
   return new PVector(x+mouseX, y+mouseY);
+}
+
+PVector getFPoint(int num) {
+  float x = 60 * cos(num*(PI/50));
+  float y = 60 * sin(num*(PI/50));
+  
+  return new PVector(x+mouseX,y+mouseY);
 }
 
 void finalize() {
