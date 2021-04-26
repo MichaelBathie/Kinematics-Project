@@ -33,6 +33,11 @@ EndEffector mobReal[];
 Chain mob[];
 float mobAngle;
 
+Pong game;
+PVector opponent[];
+EndEffector opponentPaddle;
+Chain right;
+
 void setup() {
   size(800,800);
   colorMode(RGB, 1.0f);
@@ -174,6 +179,16 @@ void setup() {
     tentChain[i] = new Chain(tentJoints, endPoint);
   }
   /*==================*/
+
+  opponent = new PVector[5];
+  opponent[0] = new PVector(1200, height/2);
+  opponent[1] = new PVector(1000, height/2);
+  opponent[2] = new PVector(800, height/2);
+  opponent[3] = new PVector(600, height/2);
+  opponent[4] = new PVector(400, height/2);
+  opponentPaddle = new EndEffector(700, height/2, 10);
+  right = new Chain(opponent, opponentPaddle);
+  game = new Pong(right);
 }
 
 void draw() {
@@ -252,6 +267,8 @@ void draw() {
       }
       endPoint.display();
     }
+  } else {
+    game.play();
   }
 
 }
@@ -274,18 +291,26 @@ void mouseDragged() {
     endPoint.point.y = mouseY;
     return;
   } 
-  if(branchExtraEnd.checkBounds()) {
-    branchExtraEnd.point.x = mouseX;
-    branchExtraEnd.point.y = mouseY;
-    return;
-  } 
-  for(int i = 0; i < branchEnds.length; i++) {
-    if(branchEnds[i].checkBounds()) {
-      branchEnds[i].point.x = mouseX;
-      branchEnds[i].point.y = mouseY;
+  if(programMode == mode.BRANCH) {
+    if(branchExtraEnd.checkBounds()) {
+      branchExtraEnd.point.x = mouseX;
+      branchExtraEnd.point.y = mouseY;
       return;
     } 
+    for(int i = 0; i < branchEnds.length; i++) {
+      if(branchEnds[i].checkBounds()) {
+        branchEnds[i].point.x = mouseX;
+        branchEnds[i].point.y = mouseY;
+        return;
+      } 
+    }
   }
+  if(programMode == mode.PONG) {
+    if(game.checkBounds()) {
+      game.player.y = mouseY - game.paddleHeight/2;
+    }
+  }
+
 }
 
 void mouseClicked() {

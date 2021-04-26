@@ -9,12 +9,13 @@ final char GO = ENTER;
 final char WIPE = 'w';
 final char FOLLOW = 'f';
 final char TENT = 't';
+final char PONG = 'p';
 final char NEXT_STEP = ' '; 
 
 boolean tent = false;
 
 enum mode {
-  DEMO, NORMAL, BRANCH, CONSTRAINT, MOB, LONG, GEN, GO, FOLLOW;
+  DEMO, NORMAL, BRANCH, CONSTRAINT, MOB, LONG, GEN, GO, FOLLOW, PONG;
 };
 
 mode programMode = mode.DEMO;
@@ -64,6 +65,10 @@ void keyPressed()
 
   if(key == TENT) {
     tent = !tent;
+  }
+
+  if(key == PONG) {
+    programMode = mode.PONG;
   }
 
   if(key == NEXT_STEP) {
