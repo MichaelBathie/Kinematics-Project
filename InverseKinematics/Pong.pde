@@ -6,8 +6,8 @@ class Pong {
   final int paddleWidth = 50;
   final int paddleHeight = 150;
 
-  int ballVelocityX = 6;
-  int ballVelocityY = 4;
+  int ballVelocityX = 4;
+  int ballVelocityY = 2;
   final int ballD = 40;
 
   Pong(Chain enemy) {
@@ -16,6 +16,7 @@ class Pong {
     this.enemy = enemy;
   }
 
+  //creates all objects for the game
   void play() {
     makePlayer();
     makeBall();
@@ -44,10 +45,12 @@ class Pong {
     rect(enemy.forward[enemy.forward.length-1].x - paddleWidth/2, enemy.forward[enemy.forward.length-1].y - paddleHeight/2, paddleWidth, paddleHeight);
   }
 
+  //we must change the position of the endeffect for the opponent as the pong ball moves around
   void adjustEndEffector() {
     enemy.endPoint.point.y = ball.y;
   }
 
+  //simple collisions checks
   void collision() {
     if(ball.x + ballD/2 + ballVelocityX > width) {
       ballVelocityX = -ballVelocityX;
@@ -62,12 +65,19 @@ class Pong {
       ballVelocityY = -ballVelocityY;
     }
 
-
+    //hit paddle side
     if(ball.x + ballD/2 >= player.x && ball.x - ballD/2 <= player.x + paddleWidth && ball.y >= player.y && ball.y <= player.y + paddleHeight) {
       ballVelocityX = -ballVelocityX;
     } else if (ball.x + ballD/2 >= enemy.forward[enemy.forward.length-1].x - paddleWidth/2 && ball.x - ballD/2 <= enemy.forward[enemy.forward.length-1].x + paddleWidth/2 && ball.y >= enemy.forward[enemy.forward.length-1].y - paddleHeight/2 && ball.y <= enemy.forward[enemy.forward.length-1].y + paddleHeight/2) {
       ballVelocityX = -ballVelocityX;
     }
+
+    //hit paddle top
+    if(((ball.x - ballD/2 <= player.x + paddleWidth && ball.x - ballD/2 >= player.x) || (ball.x + ballD/2 <= player.x + paddleWidth && ball.x + ballD/2 >= player.x)) && ((ball.y + ballD/2 >= player.y && ball.y - ballD/2 <= player.y) || (ball.y - ballD/2 <= player.y + paddleHeight && ball.y + ballD/2 >= player.y + paddleHeight))) {
+      ballVelocityY = -ballVelocityY;
+    }
+
+    //I dont need to check top for opponent because they always hit it right in the middle as it's just IK. They basically can't miss
 
   }
 

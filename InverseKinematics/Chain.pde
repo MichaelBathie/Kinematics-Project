@@ -1,27 +1,44 @@
 class Chain {
 
+  //The set of original points in the chain, useful in some scenarios
   PVector originalPoints[];
+  //This is where the points are stored initially, and after we perform the forward step in FABRIK
   PVector forward[];
+  //Where we store the points after the backward step in FABRIK
   PVector backward[];
+  //store our starting point as it's used often, and we need a copy of the original
   PVector startPoint;
+  //Array holding the lengths between all connected points
   float len[];
+  //The point we want our chain to reach
   EndEffector endPoint;
 
+  //demo points
   PVector demo[];
+  //counts which demo step we're on
   int demoCounter;
 
+  //for branching, where we store a pointer to our parent in the hierarchy
   Chain parent = null;
+  //which node on the parent branch are we attaching ourselves to
   int whichBranch;
 
-  float delta = 0.01; //if our calculated endpoint and actual end effector are "close enough"
-  int maxIterations = 10; //if we go through 10 iterations just stop and say it's good enough 
+  //if our calculated endpoint and actual end effector are "close enough"
+  float delta = 0.01; 
+  //if we go through 10 iterations just stop and say it's good enough
+  int maxIterations = 10;  
+  //on a constrained chain, lets constrain at 75 degrees
   float constraintAngle = 75;
+  //distance from our startpoint to the end effector
   float max;
+  //cumulative length of all segments. it would be the sum of len[]
   float chainSum;
 
 
+/*=============== CONSTRUCTORS ===============*/
 
-  //standard constructor for creating the chain
+
+  //Standard for making a basic chain. Only takes a set of points and an endpoint
   Chain(PVector points[], EndEffector endPoint) {
     this.startPoint = new PVector(points[0].x, points[0].y);
 
@@ -44,7 +61,7 @@ class Chain {
 
 
 
-  //for branch like structures
+  //For branching. Takes in the points of the chain, the end point, which parent it is attached to, and which node on that parent
   Chain(PVector points[], EndEffector endPoint, Chain parent, int whichBranch) {
     this.startPoint = new PVector(points[0].x, points[0].y);
 
@@ -68,7 +85,7 @@ class Chain {
 
 
 
-  //simply using this for a static demo, going to be assuming a lot of stuff
+  //Constructor only used for the demo. Most values are assumed
   Chain(PVector points[], EndEffector endPoint, String demonstration) {
     this.startPoint = new PVector(points[0].x, points[0].y);
 
@@ -84,6 +101,13 @@ class Chain {
 
     this.demoCounter = 0;
   }
+
+
+/*=============== CONSTRUCTORS ===============*/
+
+
+
+/*=============== FABRIK ===============*/
 
 
 
@@ -113,51 +137,6 @@ class Chain {
   }
 
 
-
-  //buggy version of constraints
-  void constraint() {
-    PVector u;
-    PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
-    PVector c = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
-
-    b.normalize();
-    c.normalize();
-    u = b.cross(c);
-    float a = acos(b.dot(c));
-
-    if(a > radians(constraintAngle)) {
-      if(u.z <= 0) {
-        b.rotate(radians(-1*constraintAngle));
-      } else {
-        b.rotate(radians(constraintAngle));
-      }
-      forward[1] = getFabrikPoint(forward[0], b, len[0]); 
-    }
-
-
-    for(int i = 1; i < forward.length - 1; i++) {
-      b = new PVector(forward[i].x - forward[i-1].x, forward[i].y - forward[i-1].y);
-      c = new PVector(forward[i+1].x - forward[i].x, forward[i+1].y - forward[i].y);
-      b.normalize();
-      c.normalize();
-      u = b.cross(c);
-      a = acos(b.dot(c));
-
-      if(a > radians(constraintAngle)) {
-        //we're constrained! lets change the stroke
-        stroke(1,0,0);
-        if(u.z <= 0) {
-          b.rotate(radians(-1*constraintAngle));
-        } else {
-          b.rotate(radians(constraintAngle));
-        }
-        forward[i+1] = getFabrikPoint(forward[i], b, len[i]); 
-      }
-    }
-  }
-
-
-  
   //forward part of FABRIK
   void forwards() {
     PVector temp = new PVector(0,0);
@@ -228,6 +207,58 @@ class Chain {
 
 
 
+/*=============== FABRIK ===============*/
+
+
+
+/*=============== ALTERING FABRIK ===============*/
+
+
+
+  //buggy version of contraints, looks through the points in forward and constrains if their angle is too great
+  void constraint() {
+    PVector u;
+    PVector b = new PVector(originalPoints[1].x - originalPoints[0].x, originalPoints[1].y - originalPoints[0].y);
+    PVector c = new PVector(forward[1].x - forward[0].x, forward[1].y - forward[0].y);
+
+    b.normalize();
+    c.normalize();
+    u = b.cross(c);
+    float a = acos(b.dot(c));
+
+    if(a > radians(constraintAngle)) {
+      if(u.z <= 0) {
+        b.rotate(radians(-1*constraintAngle));
+      } else {
+        b.rotate(radians(constraintAngle));
+      }
+      forward[1] = getFabrikPoint(forward[0], b, len[0]); 
+    }
+
+
+    for(int i = 1; i < forward.length - 1; i++) {
+      b = new PVector(forward[i].x - forward[i-1].x, forward[i].y - forward[i-1].y);
+      c = new PVector(forward[i+1].x - forward[i].x, forward[i+1].y - forward[i].y);
+      b.normalize();
+      c.normalize();
+      u = b.cross(c);
+      a = acos(b.dot(c));
+
+      if(a > radians(constraintAngle)) {
+        //we're constrained! lets change the stroke
+        stroke(1,0,0);
+        if(u.z <= 0) {
+          b.rotate(radians(-1*constraintAngle));
+        } else {
+          b.rotate(radians(constraintAngle));
+        }
+        forward[i+1] = getFabrikPoint(forward[i], b, len[i]); 
+      }
+    }
+  }
+
+
+  //adjust our start point to allow it to follow the end effector when reachability checks fail  
   void adjust() {
     PVector sToE = new PVector(endPoint.point.x - startPoint.x, endPoint.point.y - startPoint.y);
     sToE.normalize();
@@ -240,6 +271,16 @@ class Chain {
 
     startPoint = sToE;
   }
+
+
+
+
+/*=============== ALTERING FABRIK ===============*/
+
+
+
+
+/*=============== DISPLAY METHODS ===============*/
 
 
 
@@ -283,6 +324,59 @@ class Chain {
       }
     }
   }
+
+
+
+/*=============== DISPLAY METHODS ===============*/
+
+
+
+/*=============== HELPER METHODS ===============*/
+
+
+  
+  PVector getFabrikPoint(PVector fix, PVector vector, float l) {
+    PVector workingVector = new PVector(vector.x, vector.y);
+
+    workingVector.normalize(); 
+    workingVector.mult(l);
+
+    workingVector.x += fix.x;
+    workingVector.y += fix.y;
+
+    return workingVector;
+  }
+
+
+
+  float lengthBtwPoints(PVector point1, PVector point2) {
+    float dx = abs(point2.x - point1.x);
+    float dy = abs(point2.y - point1.y);
+
+    return sqrt(sq(dx) + sq(dy));
+  }
+
+
+
+  void increaseCount() {
+    this.demoCounter = (this.demoCounter + 1) % 16;
+  }
+
+
+
+  void debug() {
+    for(int i = 0; i < demo.length; i ++) {
+      print(demo[i].x + " " + demo[i].y + " \n");
+    }
+  }
+
+
+
+/*=============== HELPER METHODS ===============*/
+
+
+
+/*=============== DEMO ===============*/
 
 
 
@@ -338,39 +432,9 @@ class Chain {
 
     /*======= FORWARDS ========*/
   }
-
-  PVector getFabrikPoint(PVector fix, PVector vector, float l) {
-    PVector workingVector = new PVector(vector.x, vector.y);
-
-    workingVector.normalize(); 
-    workingVector.mult(l);
-
-    workingVector.x += fix.x;
-    workingVector.y += fix.y;
-
-    return workingVector;
-  }
+  
 
 
+/*=============== DEMO ===============*/
 
-  float lengthBtwPoints(PVector point1, PVector point2) {
-    float dx = abs(point2.x - point1.x);
-    float dy = abs(point2.y - point1.y);
-
-    return sqrt(sq(dx) + sq(dy));
-  }
-
-
-
-  void increaseCount() {
-    this.demoCounter = (this.demoCounter + 1) % 16;
-  }
-
-
-
-  void debug() {
-    for(int i = 0; i < demo.length; i ++) {
-      print(demo[i].x + " " + demo[i].y + " \n");
-    }
-  }
 }
